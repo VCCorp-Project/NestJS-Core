@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Res,
@@ -29,7 +30,8 @@ export class ParticipantController {
   }
 
   @Get(':id')
-  async show(@Param('id') id: number, @Res() res: Response) {
+  // Thêm mới ParseIntPipe để validate param truyền vào có phải là số hay không
+  async show(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
     const participant = await this.participantService.findByPk(id);
     return res.status(HttpStatus.OK).json({
       status: HttpStatus.OK,
