@@ -1,0 +1,27 @@
+import { Global, Module } from '@nestjs/common';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { ConfigurationModule } from '../configuration/configuration.module';
+import { ConfigService } from '@nestjs/config';
+
+@Global()
+@Module({
+  imports: [
+    ConfigurationModule,
+    SequelizeModule.forRootAsync({
+      imports: [ConfigurationModule],
+      useFactory: (configService: ConfigService) => {
+        return {
+          dialect: 'mysql',
+          host: configService.get<string>('mysql.host'), //Key mysql.host in database.config.ts
+          port: configService.get<number>('mysql.port'), //Key mysql.port in database.config.ts
+          username: configService.get<string>('mysql.username'),
+          password: configService.get<string>('mysql.password'),
+          database: configService.get<string>('mysql.db'),
+          autoLoadModels: true,
+        };
+      },
+      inject: [ConfigService],
+    }),
+  ],
+})
+export class DatabaseModule {}
