@@ -1,7 +1,9 @@
 import { Global, Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { ConfigurationModule } from '../configuration/configuration.module';
+
 import { ConfigService } from '@nestjs/config';
+import { ConfigurationModule } from '../configuration/configuration.module';
+import { DatabaseService } from './database.service';
+import { SequelizeModule } from '@nestjs/sequelize';
 
 @Global()
 @Module({
@@ -23,5 +25,7 @@ import { ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
   ],
+  providers: [DatabaseService],
+  exports: [DatabaseService],
 })
 export class DatabaseModule {}
