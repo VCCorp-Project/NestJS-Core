@@ -8,7 +8,6 @@ import { SequelizeModule } from '@nestjs/sequelize';
 @Global()
 @Module({
   imports: [
-    ConfigurationModule,
     SequelizeModule.forRootAsync({
       imports: [ConfigurationModule],
       useFactory: (configService: ConfigService) => {

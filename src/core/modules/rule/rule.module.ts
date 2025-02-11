@@ -1,10 +1,10 @@
-import { DatabaseModule } from '../database/database.module';
 import { Module } from '@nestjs/common';
 import { MustBeUniqueConstraint } from 'src/core/rules/unique';
+import { MustBeValidPhoneNumber } from 'src/core/rules/phone-number';
 
 @Module({
-  imports: [DatabaseModule],
-  providers: [MustBeUniqueConstraint],
+  imports: [],
+  providers: [MustBeUniqueConstraint, MustBeValidPhoneNumber],
   exports: [],
 })
 export class RuleModule {}

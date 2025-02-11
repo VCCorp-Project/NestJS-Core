@@ -1,12 +1,14 @@
-import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
 import databaseConfig from '../../config/database.config';
+import fileStorageConfig from 'src/apps/config/file-storage.config';
+import jwtConfig from 'src/core/config/jwt.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // Run as global
-      load: [databaseConfig], // Load databaseConfig, jwtConfig, hashingConfig, ... files here
+      load: [databaseConfig, fileStorageConfig, jwtConfig], // Load databaseConfig, jwtConfig, hashingConfig, ... files here
     }),
   ],
   exports: [ConfigModule], //Exports ConfigModule to other modules to use, especially ConfigService

@@ -12,6 +12,8 @@ import {
 } from '@nestjs/common';
 import { ParticipantService } from './participant.service';
 import { Response } from 'express';
+import { ParsePositiveNumberPipe } from 'src/core/pipes/parse-positive-number/parse-positive-number.pipe';
+import { CreateParticipantDto } from './dto/participant.dto';
 
 @Controller('participants')
 export class ParticipantController {
@@ -26,12 +28,16 @@ export class ParticipantController {
         participants,
       },
       message: 'ok',
+      success: true,
     });
   }
 
   @Get(':id')
   // Thêm mới ParseIntPipe để validate param truyền vào có phải là số hay không
-  async show(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
+  async show(
+    @Param('id', ParsePositiveNumberPipe) id: number,
+    @Res() res: Response,
+  ) {
     const participant = await this.participantService.findByPk(id);
     return res.status(HttpStatus.OK).json({
       status: HttpStatus.OK,
@@ -43,7 +49,7 @@ export class ParticipantController {
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: number, @Res() res: Response) {
+  async delete(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
     const participant = await this.participantService.deleteByPk(id);
     if (participant == null) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -59,8 +65,12 @@ export class ParticipantController {
   }
 
   @Post()
-  async store(@Body() body: object, @Res() res: Response) {
-    const participant = await this.participantService.store(body);
+  async store(
+    @Body() createParticipantDto: CreateParticipantDto, // Apply DTO classes.
+    @Res() res: Response,
+  ) {
+    const participant =
+      await this.participantService.store(createParticipantDto);
     return res.status(HttpStatus.CREATED).json({
       status: HttpStatus.OK,
       data: {
@@ -72,7 +82,7 @@ export class ParticipantController {
 
   @Put(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: object,
     @Res() res: Response,
   ) {

@@ -5,35 +5,37 @@ import { Participant } from 'src/apps/models/participant.model';
 @Injectable()
 export class ParticipantService {
   constructor(
-    @InjectModel(Participant)
-    private participant: typeof Participant,
+    @InjectModel(Participant) private participant: typeof Participant,
   ) {}
 
   async findAll(): Promise<Participant[]> {
-    return await this.participant.findAll();
+    return await this.participant.findAll<Participant>();
   }
 
   async findByPk(id: number): Promise<Participant | null> {
-    return await this.participant.findByPk(id);
+    return await this.participant.findByPk<Participant>(id);
   }
 
   async deleteByPk(id: number): Promise<number | null> {
-    const participant = await this.participant.findByPk(id);
+    const participant = await this.participant.findByPk<Participant>(id);
     if (!participant) {
       return null;
     }
     return await this.participant.destroy();
   }
 
-  async store(data: any): Promise<Participant> {
-    return await this.participant.create(data);
+  async store(participant: Partial<Participant>): Promise<Participant> {
+    return await this.participant.create<Participant>(participant);
   }
 
-  async update(id: number, data: any): Promise<Participant | null> {
+  async update(
+    id: number,
+    participantData: Partial<Participant>,
+  ): Promise<Participant | null> {
     const participant = await this.participant.findByPk(id);
     if (!participant) {
       return null;
     }
-    return await participant.update(data);
+    return await participant.update(participantData);
   }
 }
