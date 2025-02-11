@@ -30,7 +30,14 @@ export class User extends Model {
   password: string;
 
   @BeforeCreate
-  static async hashPassword(user: User) {
+  static async hashPassword(user: User): Promise<void> {
     user.password = await bcrypt.hash(user.password, jwtConfig().jwt.rounds);
+  }
+
+  async compare(
+    password: string,
+    userPassword = this.password,
+  ): Promise<boolean> {
+    return bcrypt.compare(password, userPassword);
   }
 }
