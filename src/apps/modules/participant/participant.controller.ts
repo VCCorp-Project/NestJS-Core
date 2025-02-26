@@ -17,11 +17,11 @@ import { ParsePositiveNumberPipe } from 'src/core/pipes/parse-positive-number/pa
 import { CreateParticipantDto } from './dto/participant.dto';
 import { AuthGuard } from '../../guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('participants')
 export class ParticipantController {
   constructor(private participantService: ParticipantService) {}
 
-  @UseGuards(AuthGuard)
   @Get()
   async findAll(@Res() res: Response) {
     const participants = await this.participantService.findAll();
