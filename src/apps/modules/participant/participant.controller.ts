@@ -9,16 +9,19 @@ import {
   Post,
   Put,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { ParticipantService } from './participant.service';
 import { Response } from 'express';
 import { ParsePositiveNumberPipe } from 'src/core/pipes/parse-positive-number/parse-positive-number.pipe';
 import { CreateParticipantDto } from './dto/participant.dto';
+import { AuthGuard } from '../../guards/auth.guard';
 
 @Controller('participants')
 export class ParticipantController {
   constructor(private participantService: ParticipantService) {}
 
+  @UseGuards(AuthGuard)
   @Get()
   async findAll(@Res() res: Response) {
     const participants = await this.participantService.findAll();

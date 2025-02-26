@@ -1,7 +1,9 @@
 import { JWTService } from './jwt.service';
 import { JwtService } from '@nestjs/jwt';
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
+// Global module
+@Global()
 @Module({
   exports: [JWTService],
   providers: [JWTService, JwtService],

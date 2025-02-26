@@ -13,7 +13,7 @@ export class AuthService {
   constructor(
     @InjectModel(User) private user: typeof User,
     private jwtService: JWTService,
-    private configServce: ConfigService,
+    private configService: ConfigService,
   ) {}
 
   async authenticate(
@@ -42,17 +42,28 @@ export class AuthService {
       throw new NotFoundException();
     }
 
+    return this.createResponse(userModel);
+  }
+
+  // Create common response
+  async createResponse(user: User): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: User;
+    createdTime: number;
+    expiresIn: string | undefined;
+  }> {
     const payload = { sub: user.id, email: user.email };
     return {
       user,
       accessToken: await this.jwtService.signAsync(payload, {
-        expiresIn: this.configServce.get<string>('jwt.ttl'),
+        expiresIn: this.configService.get<string>('jwt.ttl'),
       }),
       refreshToken: await this.jwtService.signAsync(payload, {
-        expiresIn: this.configServce.get<string>('jwt.refresh_ttl'),
+        expiresIn: this.configService.get<string>('jwt.refresh_ttl'),
       }),
       createdTime: Math.floor(new Date().getTime() / 1000),
-      expiresIn: this.configServce.get<string>('jwt.ttl'),
+      expiresIn: this.configService.get<string>('jwt.ttl'),
     };
   }
 
@@ -70,17 +81,6 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException();
     }
-    const payload = { sub: user.id, email: user.email };
-    return {
-      user,
-      accessToken: await this.jwtService.signAsync(payload, {
-        expiresIn: this.configServce.get<string>('jwt.ttl'),
-      }),
-      refreshToken: await this.jwtService.signAsync(payload, {
-        expiresIn: this.configServce.get<string>('jwt.refresh_ttl'),
-      }),
-      createdTime: Math.floor(new Date().getTime() / 1000),
-      expiresIn: this.configServce.get<string>('jwt.ttl'),
-    };
+    return this.createResponse(user);
   }
 }

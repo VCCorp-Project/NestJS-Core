@@ -16,4 +16,10 @@ export class JWTService {
       ...options,
     });
   }
+
+  async verifyAsync(token: string): Promise<object> {
+    return this.jwtService.verifyAsync(token, {
+      secret: this.configService.get<string>('jwt.secret'),
+    });
+  }
 }
