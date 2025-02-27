@@ -10,29 +10,35 @@ import {
   Put,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ParticipantService } from './participant.service';
 import { Response } from 'express';
 import { ParsePositiveNumberPipe } from 'src/core/pipes/parse-positive-number/parse-positive-number.pipe';
 import { CreateParticipantDto } from './dto/participant.dto';
 import { AuthGuard } from '../../guards/auth.guard';
+import { ResponseInterceptor } from '../../../core/interceptors/response/response.interceptor';
 
 @UseGuards(AuthGuard)
 @Controller('participants')
 export class ParticipantController {
   constructor(private participantService: ParticipantService) {}
 
+  @UseInterceptors(ResponseInterceptor)
   @Get()
-  async findAll(@Res() res: Response) {
+  async findAll() {
     const participants = await this.participantService.findAll();
-    return res.status(HttpStatus.OK).json({
-      status: HttpStatus.OK,
-      data: {
-        participants,
-      },
-      message: 'ok',
-      success: true,
-    });
+    return {
+      participants,
+    };
+    // return res.status(HttpStatus.OK).json({
+    //   status: HttpStatus.OK,
+    //   data: {
+    //     participants,
+    //   },
+    //   message: 'ok',
+    //   success: true,
+    // });
   }
 
   @Get(':id')

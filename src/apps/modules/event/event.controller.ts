@@ -1,16 +1,5 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  HttpStatus,
-  Post,
-  Res,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
 import { EventService } from './event.service';
-import { CreateEventDto } from './dto/event.dto';
 import { Response } from 'express';
 import { FileService } from 'src/core/modules/file/file.service';
 
