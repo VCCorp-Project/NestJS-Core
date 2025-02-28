@@ -10,6 +10,13 @@ import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { EncryptionService } from '../../modules/encryption/encryption.service';
 
+interface ResponseType {
+  success: boolean;
+  code: number;
+  message: string;
+  data?: any;
+}
+
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
   constructor(
@@ -30,18 +37,21 @@ export class ResponseInterceptor implements NestInterceptor {
               'response.encryption',
             );
 
-            const keys = Object.keys(data);
-            if (responseEncryption) {
-              // Simulate encrypt data via JSON.stringify()
-              keys.map((key) => (data[key] = JSON.stringify(data[key])));
-            }
-
-            response.status(HttpStatus.OK).json({
+            const responseData: ResponseType = {
               success: true,
-              data,
               code: HttpStatus.OK,
               message: 'ok',
-            });
+            };
+
+            const keys = Object.keys(data);
+            if (keys.length > 0) {
+              if (responseEncryption) {
+                // Simulate encrypt data via JSON.stringify()
+                keys.map((key) => (data[key] = JSON.stringify(data[key])));
+              }
+              responseData.data = data;
+            }
+            response.status(HttpStatus.OK).json(responseData);
           }),
         )
     );

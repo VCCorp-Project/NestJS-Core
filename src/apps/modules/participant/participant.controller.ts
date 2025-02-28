@@ -41,10 +41,7 @@ export class ParticipantController {
 
   @Delete(':id')
   async delete(@Param('id', ParseIntPipe) id: number) {
-    const participant = await this.participantService.deleteByPk(id);
-    if (participant == null) {
-      throw new NotFoundException(`Participant with id ${id} not found`);
-    }
+    await this.participantService.deleteByPk(id);
     return {};
   }
 

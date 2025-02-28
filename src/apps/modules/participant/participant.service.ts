@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Participant } from 'src/apps/models/participant.model';
 
@@ -12,16 +12,17 @@ export class ParticipantService {
     return await this.participant.findAll<Participant>();
   }
 
-  async findByPk(id: number): Promise<Participant | null> {
-    return await this.participant.findByPk<Participant>(id);
+  async findByPk(id: number): Promise<Participant> {
+    const participant = await this.participant.findByPk<Participant>(id);
+    if (participant == null) {
+      throw new NotFoundException(`Participant with id ${id} not found`);
+    }
+    return participant;
   }
 
-  async deleteByPk(id: number): Promise<number | null> {
-    const participant = await this.participant.findByPk<Participant>(id);
-    if (!participant) {
-      return null;
-    }
-    return await this.participant.destroy();
+  async deleteByPk(id: number): Promise<void> {
+    const participant = await this.findByPk(id);
+    return await participant.destroy();
   }
 
   async store(participant: Partial<Participant>): Promise<Participant> {
