@@ -39,7 +39,7 @@ export class AuthService {
     const userModel = this.user.build(user?.toJSON());
     const check = await userModel.compare(password);
     if (!check) {
-      throw new NotFoundException();
+      throw new NotFoundException('User not found');
     }
 
     return this.createResponse(userModel);
