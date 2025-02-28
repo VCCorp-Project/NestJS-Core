@@ -8,10 +8,14 @@ import {
 import { map, Observable } from 'rxjs';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { EncryptionService } from '../../modules/encryption/encryption.service';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private encryptionService: EncryptionService,
+  ) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     // Before action
     return (
@@ -19,15 +23,17 @@ export class ResponseInterceptor implements NestInterceptor {
         .handle()
         // After action executed
         .pipe(
-          map((data: [] | string | object) => {
+          map((data: Record<string, any>) => {
             const response = context.switchToHttp().getResponse<Response>();
 
             const responseEncryption = this.configService.get<boolean>(
               'response.encryption',
             );
+
+            const keys = Object.keys(data);
             if (responseEncryption) {
-              // Simulate encrypt data;
-              data = JSON.stringify(data);
+              // Simulate encrypt data via JSON.stringify()
+              keys.map((key) => (data[key] = JSON.stringify(data[key])));
             }
 
             response.status(HttpStatus.OK).json({

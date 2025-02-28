@@ -4,7 +4,7 @@ import {
   HttpStatus,
   NotFoundException,
   Post,
-  Res,
+  Res, UseInterceptors,
 } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
@@ -20,8 +20,8 @@ export class AuthController {
     try {
       const { user, accessToken, refreshToken, createdTime, expiresIn } =
         await this.authService.authenticate(email, password);
-      return res.status(HttpStatus.OK).json({
-        data: {
+      return {
+        user: {
           id: user.id,
           email: user.email,
           access_token: accessToken,
@@ -29,17 +29,10 @@ export class AuthController {
           createdTime,
           expiresIn,
         },
-        success: true,
-        status: HttpStatus.OK,
-        message: 'ok',
-      });
+      };
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new NotFoundException({
-          status: HttpStatus.NOT_FOUND,
-          data: null,
-          success: false,
-        });
+        throw new NotFoundException('User not found');
       }
     }
   }
