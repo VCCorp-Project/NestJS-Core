@@ -1,23 +1,14 @@
-import {
-  Body,
-  Controller,
-  HttpStatus,
-  NotFoundException,
-  Post,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, NotFoundException, Post } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {
-  }
+  constructor(private authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() { email, password }: LoginDto, @Res() res: Response) {
+  async login(@Body() { email, password }: LoginDto) {
     try {
       const { user, accessToken, refreshToken, createdTime, expiresIn } =
         await this.authService.authenticate(email, password);
