@@ -3,7 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus, NotFoundException,
+  HttpStatus, Inject,
   Param,
   ParseIntPipe,
   Post,
@@ -16,20 +16,27 @@ import { Response } from 'express';
 import { ParsePositiveNumberPipe } from 'src/core/pipes/parse-positive-number/parse-positive-number.pipe';
 import { CreateParticipantDto } from './dto/participant.dto';
 import { AuthGuard } from '../../guards/auth.guard';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @UseGuards(AuthGuard)
 @Controller('participants')
 export class ParticipantController {
-  constructor(private participantService: ParticipantService) {}
+  constructor(
+    private participantService: ParticipantService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache, // <-- add this
+  ) {}
 
   @Get()
   async findAll() {
     const participants = await this.participantService.findAll();
+    await this.cacheManager.set('participants', participants, 300);
     // No need response.status().json(), return raw data only
     return {
       participants,
     };
   }
+
   @Get(':id')
   // Thêm mới ParseIntPipe để validate param truyền vào có phải là số hay không
   async show(@Param('id', ParsePositiveNumberPipe) id: number) {
