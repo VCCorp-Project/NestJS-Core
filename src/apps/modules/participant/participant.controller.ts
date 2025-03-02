@@ -19,7 +19,6 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { MailerService } from '@nestjs-modules/mailer';
 
 @UseGuards(AuthGuard)
 @Controller('participants')
@@ -28,7 +27,6 @@ export class ParticipantController {
     private participantService: ParticipantService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache, // <-- add this
     @InjectQueue('email-queue') private emailQueue: Queue,
-    private mailerService: MailerService,
   ) {}
 
   @Get()
@@ -43,22 +41,6 @@ export class ParticipantController {
     } catch (error) {
       console.error(error);
     }
-  }
-
-  @Get('mail')
-  async sendMail() {
-    await this.mailerService.sendMail({
-      to: 'test@nestjs.com', // list of receivers
-      from: 'noreply@nestjs.com', // sender address
-      subject: 'Testing Nest MailerModule ✔', // Subject line
-      text: 'welcome', // plaintext body
-      template: 'welcome', // Mail file,
-      // Data sent to welcome.hbs template
-      context: {
-        name: 'nguyenhuucam',
-      },
-    });
-    return {};
   }
 
   @Get(':id')
@@ -105,16 +87,9 @@ export class ParticipantController {
   ) {
     const { participant, event } =
       await this.participantService.participateInEvent(participantId, eventId);
-    //sending mail
-    await this.mailerService.sendMail({
-      to: 'test@nestjs.com',
-      subject: 'Event participation',
-      from: 'noreply@nestjs.com',
-      template: 'welcome',
-      context: {
-        email: participant.email,
-        eventName: event.eventName,
-      },
+    await this.emailQueue.add('sending-email', {
+      participantEmail: participant.email,
+      eventName: event.eventName,
     });
     return true;
   }
