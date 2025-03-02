@@ -1,11 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Participant } from 'src/apps/models/participant.model';
+import { Event } from '../../models/event.model';
 
 @Injectable()
 export class ParticipantService {
   constructor(
     @InjectModel(Participant) private participant: typeof Participant,
+    @InjectModel(Event) private event: typeof Event,
   ) {}
 
   async findAll(): Promise<Participant[]> {
@@ -38,5 +40,36 @@ export class ParticipantService {
       return null;
     }
     return await participant.update(participantData);
+  }
+
+  /**
+   * Assign participant to event
+   * @param participantId
+   * @param eventId
+   */
+  async participateInEvent(
+    participantId: number,
+    eventId: number,
+  ): Promise<{
+    event: Event;
+    participant: Participant;
+  }> {
+    const participant =
+      await this.participant.findByPk<Participant>(participantId);
+    if (!participant) {
+      throw new NotFoundException(
+        `Participant with id ${participantId} not found`,
+      );
+    }
+    const event = await this.event.findByPk(eventId);
+    if (!event) {
+      throw new NotFoundException(`Event with id ${eventId} not found`);
+    }
+
+    await participant.$set('events', event);
+    return {
+      participant,
+      event,
+    };
   }
 }

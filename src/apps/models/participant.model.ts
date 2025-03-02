@@ -1,10 +1,12 @@
 import {
-  AutoIncrement,
+  AutoIncrement, BelongsToMany,
   Column,
   Model,
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
+import { EventParticipant } from './event-participant.model';
+import { Event } from './event.model';
 
 @Table({
   tableName: 'participants',
@@ -23,4 +25,7 @@ export class Participant extends Model {
 
   @Column({ field: 'phone_number' })
   phoneNumber: string;
+
+  @BelongsToMany(() => Event, () => EventParticipant)
+  events: Event[];
 }

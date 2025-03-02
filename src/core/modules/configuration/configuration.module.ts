@@ -5,6 +5,8 @@ import fileStorageConfig from 'src/apps/config/file-storage.config';
 import jwtConfig from 'src/core/config/jwt.config';
 import encryptionConfig from '../../config/encryption.config';
 import cacheConfig from '../../config/cache.config';
+import queueConfig from '../../config/queue.config';
+import mailConfig from '../../config/mail.config';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import cacheConfig from '../../config/cache.config';
         jwtConfig,
         encryptionConfig,
         cacheConfig,
+        queueConfig,
+        mailConfig,
       ], // Load databaseConfig, jwtConfig, hashingConfig, ... files here
     }),
   ],
