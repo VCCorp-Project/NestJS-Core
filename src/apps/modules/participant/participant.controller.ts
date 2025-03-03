@@ -87,10 +87,16 @@ export class ParticipantController {
   ) {
     const { participant, event } =
       await this.participantService.participateInEvent(participantId, eventId);
-    await this.emailQueue.add('sending-email', {
-      participantEmail: participant.email,
-      eventName: event.eventName,
-    });
+    await this.emailQueue.add(
+      'sending-email',
+      {
+        participantEmail: participant.email,
+        eventName: event.eventName,
+      },
+      {
+        delay: 3000,
+      },
+    );
     return true;
   }
 }
