@@ -2,18 +2,16 @@ import {
   Body,
   Controller,
   Get,
-  Post, Req,
+  Post,
   UploadedFile,
   UploadedFiles,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/event.dto';
 import { AuthGuard } from '../../guards/auth.guard';
 import { SingleFileUpload } from '../../../core/decorators/single-file-upload.decorator';
 import { MultiFileUpload } from '../../../core/decorators/multi-file-upload.decorator';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(AuthGuard)
 @Controller('events')
@@ -69,8 +67,6 @@ export class EventController {
       background: Express.Multer.File;
     },
   ) {
-    // console.log('in controller');
-    console.log(file);
     return true;
   }
 }
