@@ -1,9 +1,9 @@
 import {
   ArgumentMetadata,
-  BadRequestException,
   HttpStatus,
   Injectable,
   PipeTransform,
+  UnprocessableEntityException,
   ValidationPipeOptions,
 } from '@nestjs/common';
 
@@ -22,8 +22,8 @@ export class CustomValidationPipe implements PipeTransform<any> {
     const object = plainToInstance(metatype as any, value);
     const errors = await validate(object);
     if (errors.length > 0) {
-      // Customize output
-      throw new BadRequestException({
+      // Customize output with error 422
+      throw new UnprocessableEntityException({
         errors: errors.map((error) => {
           delete error.target;
           return {

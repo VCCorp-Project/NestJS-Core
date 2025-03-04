@@ -2,9 +2,10 @@ import {
   ExceptionFilter,
   Catch,
   ArgumentsHost,
-  HttpException,
+  HttpException, UnprocessableEntityException,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import * as fs from 'node:fs';
 
 interface ExceptionResponse {
   statusCode: number;
@@ -16,13 +17,22 @@ interface ExceptionResponse {
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
+    const request = host.switchToHttp().getRequest<Request>();
     const response = host.switchToHttp().getResponse<Response>();
 
-    const exceptionData : ExceptionResponse = {
+    const exceptionData: ExceptionResponse = {
       statusCode: 400,
       success: false,
       message: '',
     };
+
+    // if validation error occur, delete the file
+    if (exception instanceof UnprocessableEntityException) {
+      if (request.file) {
+        fs.unlinkSync(request.file.path);
+      }
+    }
+
     if (typeof exception.getResponse() === 'object') {
       const exceptionResponseObject =
         exception.getResponse() as ExceptionResponse;

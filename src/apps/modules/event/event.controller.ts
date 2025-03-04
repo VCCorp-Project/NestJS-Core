@@ -34,13 +34,19 @@ export class EventController {
     field_name: 'cover_image',
     disk: 'cover_image',
   })
-  storeSingleFile(
+  async storeSingleFile(
     @UploadedFile() file: Express.Multer.File,
     @Body() createEventDto: CreateEventDto,
   ) {
-    console.log(file);
-    // return true;
-    return true;
+    if (!file) {
+      throw new Error('File not found');
+    }
+    createEventDto.coverImage = file.originalname;
+    createEventDto.coverImageDiskStorage = 'local';
+    const event = await this.eventService.store(createEventDto);
+    return {
+      event,
+    };
   }
 
   @Post('store/multi-file')
@@ -52,11 +58,18 @@ export class EventController {
     },
     {
       field_name: 'cover_image',
-      disk: 'abc',
+      disk: 'cover_image',
       max_count: 1,
     },
   ])
-  storeMultipleFile(@UploadedFiles() file: {cover_image: Express.Multer.File, background: Express.Multer.File}) {
+  storeMultipleFile(
+    @UploadedFiles()
+    file: {
+      cover_image: Express.Multer.File;
+      background: Express.Multer.File;
+    },
+  ) {
+    // console.log('in controller');
     console.log(file);
     return true;
   }

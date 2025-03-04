@@ -1,4 +1,8 @@
-import { applyDecorators, ForbiddenException, UseInterceptors } from '@nestjs/common';
+import {
+  applyDecorators,
+  ForbiddenException,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
