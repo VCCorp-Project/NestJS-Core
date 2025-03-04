@@ -19,6 +19,7 @@ export class EventService {
   }
 
   async store(event: Partial<Event>): Promise<Event> {
+    console.log(event);
     return this.event.create(event);
   }
 }

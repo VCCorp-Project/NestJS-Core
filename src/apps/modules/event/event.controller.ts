@@ -2,25 +2,24 @@ import {
   Body,
   Controller,
   Get,
-  HttpStatus,
-  Post,
+  Post, Req,
+  UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { EventService } from './event.service';
-import { FileService } from 'src/core/modules/file/file.service';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateEventDto } from './dto/event.dto';
 import { AuthGuard } from '../../guards/auth.guard';
+import { SingleFileUpload } from '../../../core/decorators/single-file-upload.decorator';
+import { MultiFileUpload } from '../../../core/decorators/multi-file-upload.decorator';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(AuthGuard)
 @Controller('events')
 export class EventController {
-  constructor(
-    private eventService: EventService,
-    private fileService: FileService,
-  ) {}
+  constructor(private eventService: EventService) {
+  }
 
   @Get()
   async findAll() {
@@ -30,17 +29,35 @@ export class EventController {
     };
   }
 
-  @Post('store')
-  @UseInterceptors(FileInterceptor('cover_image'))
-  async store(
-    @UploadedFiles() files: Array<Express.Multer.File>,
+  @Post('store/single-file')
+  @SingleFileUpload({
+    field_name: 'cover_image',
+    disk: 'cover_image',
+  })
+  storeSingleFile(
+    @UploadedFile() file: Express.Multer.File,
     @Body() createEventDto: CreateEventDto,
   ) {
-    createEventDto.coverImage = files[0].originalname;
-    const event = await this.eventService.store(createEventDto);
-    return {
-      event,
-      location: files[0].destination,
-    };
+    console.log(file);
+    // return true;
+    return true;
+  }
+
+  @Post('store/multi-file')
+  @MultiFileUpload([
+    {
+      field_name: 'background',
+      disk: 'background',
+      max_count: 1,
+    },
+    {
+      field_name: 'cover_image',
+      disk: 'cover_image',
+      max_count: 1,
+    },
+  ])
+  storeMultipleFile(@UploadedFiles() file: {cover_image: Express.Multer.File, background: Express.Multer.File}) {
+    console.log(file);
+    return true;
   }
 }
