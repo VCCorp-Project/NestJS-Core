@@ -4,13 +4,9 @@ import { EventParticipant } from 'src/apps/models/event-participant.model';
 import { EventService } from './event.service';
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-  imports: [
-    SequelizeModule.forFeature([Event, EventParticipant]),
-    MulterModule.register({ dest: 'uploads' }),
-  ],
+  imports: [SequelizeModule.forFeature([Event, EventParticipant])],
   controllers: [EventController],
   providers: [EventService],
 })

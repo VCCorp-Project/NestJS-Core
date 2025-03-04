@@ -31,6 +31,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
       if (request.file) {
         fs.unlinkSync(request.file.path);
       }
+
+      if (request.files) {
+        const uploadedFiles = request.files as Express.Multer.File[];
+        uploadedFiles.map((file: Express.Multer.File) =>
+          fs.unlinkSync(file.path),
+        );
+      }
     }
 
     if (typeof exception.getResponse() === 'object') {
