@@ -40,8 +40,10 @@ export function MultiFileUpload(fileOptions: MultiFile[], localOptions?: any) {
               foundFile.disk
             ] as DiskDestination;
 
-            if (!disk.path) {
-              throw new Error(`Disk of ${foundFile.disk} not found`);
+            if (!disk) {
+              throw new Error(
+                `Field name: ${foundFile.field_name} with disk: ${foundFile.disk} not found`,
+              );
             }
             const diskPath = disk ? disk.path : '';
 

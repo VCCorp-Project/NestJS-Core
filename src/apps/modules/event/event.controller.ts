@@ -52,7 +52,7 @@ export class EventController {
     },
     {
       field_name: 'cover_image',
-      disk: 'cover_image',
+      disk: 'abc',
       max_count: 1,
     },
   ])
